@@ -1,6 +1,5 @@
 const inputCity = document.getElementById("input-city");
 const citySearchResultList = document.getElementById("city-search-result-list");
-const citySearchResultListItems = document.querySelectorAll('city-search-result-list-item');
 const cityName = document.getElementById('city');
 
 
@@ -20,10 +19,11 @@ inputCity.addEventListener('keypress', (event) => {
             const data = JSON.parse(JSON.stringify(response));
             citySearchResultList.innerHTML = '';
             data.forEach(city => {
-                citySearchResultList.insertAdjacentHTML('beforeend',
-                `
-                    <li class="city-search-result-list-item">${city.name}</i>
-                `);
+                const citySearchResultListItem = document.createElement('li');
+                citySearchResultListItem.classList.add('city-search-result-list-item');
+                citySearchResultListItem.textContent = city.name;
+                citySearchResultListItem.addEventListener('click', () => console.log(city.name));
+                citySearchResultList.append(citySearchResultListItem);
             });
         })
         .catch(err => console.error(err));
@@ -37,10 +37,11 @@ inputCity.addEventListener('keydown', (event) => {
                 const data = JSON.parse(JSON.stringify(response));
                 citySearchResultList.innerHTML = '';
                 data.forEach(city => {
-                    citySearchResultList.insertAdjacentHTML('beforeend',
-                    `
-                        <li class="city-search-result-list-item">${city.name}</li>
-                    `);
+                    const citySearchResultListItem = document.createElement('li');
+                    citySearchResultListItem.classList.add('city-search-result-list-item');
+                    citySearchResultListItem.textContent = city.name;
+                    citySearchResultListItem.addEventListener('click', () => console.log(city.name));
+                    citySearchResultList.append(citySearchResultListItem);
                 });
             })
             .catch(err => console.error(err));
@@ -49,11 +50,3 @@ inputCity.addEventListener('keydown', (event) => {
         citySearchResultList.innerHTML = '';
     }
 });
-
-// citySearchResultListItems.forEach(resultItem => {
-//     resultItem.addEventListener('click', (event) => {
-//             console.log('sds');
-//         //cityName.innerText = resultItem.value;
-        
-//     });
-// });
