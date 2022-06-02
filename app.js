@@ -2,7 +2,6 @@ const inputCity = document.getElementById("input-city");
 const citySearchResultList = document.getElementById("city-search-result-list");
 const cityName = document.getElementById('city');
 
-
 const options = {
     method: 'GET',
     headers: {
@@ -12,39 +11,40 @@ const options = {
 };
 const requestString = `https://spott.p.rapidapi.com/places/autocomplete?q=${inputCity.value}`;
 
-inputCity.addEventListener('keypress', (event) => {
-    fetch(`https://spott.p.rapidapi.com/places/autocomplete?q=${inputCity.value}`, options)
-        .then(response => response.json())
-        .then(response => {
-            const data = JSON.parse(JSON.stringify(response));
-            citySearchResultList.innerHTML = '';
-            data.forEach(city => {
-                const citySearchResultListItem = document.createElement('li');
-                citySearchResultListItem.classList.add('city-search-result-list-item');
-                citySearchResultListItem.textContent = city.name;
-                citySearchResultListItem.addEventListener('click', () => console.log(city.name));
-                citySearchResultList.append(citySearchResultListItem);
-            });
-        })
-        .catch(err => console.error(err));
+async function citiesAPIRequest(city) {
+    try {
+        let response = await fetch(`https://spott.p.rapidapi.com/places/autocomplete?q=${city}`, options);
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function createCitySearchResultListItem(cityName) {
+    const citySearchResultListItem = document.createElement('li');
+    citySearchResultListItem.classList.add('city-search-result-list-item');
+    citySearchResultListItem.textContent = cityName;
+    citySearchResultListItem.addEventListener('click', () => console.log(cityName));
+    citySearchResultList.append(citySearchResultListItem);
+}
+
+inputCity.addEventListener('keypress', () => {
+    citiesAPIRequest(inputCity.value).then(data => {
+        citySearchResultList.innerHTML = '';
+        data.forEach(city => {
+            createCitySearchResultListItem(city.name);
+        });
+    });
 });
 
 inputCity.addEventListener('keydown', (event) => {
     if (inputCity.value !== '' && event.key === 'Backspace') {
-        fetch(`https://spott.p.rapidapi.com/places/autocomplete?q=${inputCity.value}`, options)
-            .then(response => response.json())
-            .then(response => {
-                const data = JSON.parse(JSON.stringify(response));
-                citySearchResultList.innerHTML = '';
-                data.forEach(city => {
-                    const citySearchResultListItem = document.createElement('li');
-                    citySearchResultListItem.classList.add('city-search-result-list-item');
-                    citySearchResultListItem.textContent = city.name;
-                    citySearchResultListItem.addEventListener('click', () => console.log(city.name));
-                    citySearchResultList.append(citySearchResultListItem);
-                });
-            })
-            .catch(err => console.error(err));
+        citiesAPIRequest(inputCity.value).then(data => {
+            citySearchResultList.innerHTML = '';
+            data.forEach(city => {
+                createCitySearchResultListItem(city.name);
+            });
+        });
     }
     if (!inputCity.value) {
         citySearchResultList.innerHTML = '';
